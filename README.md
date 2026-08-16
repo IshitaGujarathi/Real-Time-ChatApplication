@@ -409,74 +409,6 @@ This makes WebSocket particularly useful for applications such as:
 
 ---
 
-# 📡 STOMP
-
-The application uses **STOMP (Simple Text Oriented Messaging Protocol)** over WebSocket.
-
-STOMP provides a structured messaging model for communication between the React frontend and Spring Boot backend.
-
-The general communication flow is:
-
-```text
-React Client
-     │
-     │ STOMP Message
-     ▼
-SockJS Connection
-     │
-     ▼
-Spring Boot WebSocket
-     │
-     ▼
-Message Broker
-     │
-     ▼
-Subscribed Clients
-```
-
-This makes it easier to manage:
-
-* Public messages
-* Private messages
-* User join events
-* User leave events
-* Message subscriptions
-
----
-
-# 🧩 Frontend Responsibilities
-
-The React frontend is responsible for:
-
-* Rendering the user interface
-* Handling username input
-* Managing application state
-* Establishing the WebSocket connection
-* Sending STOMP messages
-* Receiving real-time messages
-* Displaying public messages
-* Displaying private messages
-* Displaying active users
-* Handling logout
-* Providing the chat interface
-
----
-
-# ⚙️ Backend Responsibilities
-
-The Spring Boot backend is responsible for:
-
-* Running the application server
-* Managing WebSocket connections
-* Handling STOMP messages
-* Processing user events
-* Managing connected users
-* Broadcasting public messages
-* Routing private messages
-* Handling user join and leave events
-
----
-
 # 📦 Important Dependencies
 
 ## Backend
@@ -558,8 +490,6 @@ The application can be extended with additional features such as:
 * 💾 Persistent message storage
 * 🟢 Online/offline status
 * ✍️ Typing indicators
-* ✔️ Message delivery status
-* ✔️ Read receipts
 * 🗑️ Delete messages
 * ✏️ Edit messages
 * 🔔 Push notifications
@@ -572,22 +502,6 @@ The application can be extended with additional features such as:
 * 🔎 Message search
 * 📱 Improved mobile experience
 * 👥 Group chat functionality
-
----
-
-# 📌 Project Highlights
-
-> **Real-time communication** using WebSocket, STOMP, and SockJS.
-
-> **Full-stack architecture** combining React.js and Spring Boot.
-
-> **Public and private messaging** for flexible communication.
-
-> **User presence management** to keep track of active participants.
-
-> **Multimedia support** for richer communication.
-
-> **Responsive frontend** for a better user experience.
 
 ---
 
