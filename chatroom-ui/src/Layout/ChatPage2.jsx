@@ -59,8 +59,8 @@ export const ChatPage2 = () => {
     console.log("🔌 Connecting WebSocket...");
 
     const socket = new SockJS(
-      "http://localhost:8080/ws"
-    );
+  "https://real-time-chatapplication-1.onrender.com/ws"
+);
 
     stompClient = Stomp.over(socket);
 
