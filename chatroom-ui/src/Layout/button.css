@@ -1,0 +1,112 @@
+/* =====================================================
+   NORMAL BUTTON STYLING
+   Replaces the old bat-shaped button
+   ===================================================== */
+
+button {
+  border: none;
+  position: relative;
+  width: auto;
+  min-width: 100px;
+  height: 43px;
+  padding: 0 20px;
+  z-index: 2;
+
+  /* Remove the bat mask */
+  -webkit-mask: none;
+  mask: none;
+
+  cursor: pointer;
+
+  background: linear-gradient(
+    135deg,
+    #667eea,
+    #764ba2
+  );
+
+  color: white;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+
+  transform: none;
+
+  box-shadow:
+    0 4px 12px rgba(91, 95, 240, 0.25);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+
+/* Hover */
+
+button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 18px rgba(91, 95, 240, 0.35);
+
+  background: linear-gradient(
+    135deg,
+    #5b5ff0,
+    #6f42a1
+  );
+}
+
+
+/* Click */
+
+button:active {
+  transform: translateY(0);
+
+  box-shadow:
+    0 3px 8px rgba(91, 95, 240, 0.25);
+}
+
+
+/* Remove old pseudo-element effects */
+
+button:after {
+  display: none;
+}
+
+button:before {
+  display: none;
+}
+
+
+/* Button text */
+
+button span {
+  position: static;
+  width: auto;
+
+  font-size: inherit;
+  font-weight: inherit;
+
+  left: auto;
+  top: auto;
+
+  letter-spacing: inherit;
+
+  text-align: center;
+
+  transform: none;
+
+  color: inherit;
+
+  transition: none;
+}
+
+
+/* No weird hover text effect */
+
+button:hover span {
+  color: inherit;
+}

@@ -1,0 +1,35 @@
+# =========================
+# React / Node
+# =========================
+chatroom-ui/node_modules/
+chatroom-ui/dist/
+chatroom-ui/build/
+
+# Environment files
+.env
+.env.*
+chatroom-ui/.env
+chatroom-ui/.env.*
+
+# =========================
+# Spring Boot / Maven
+# =========================
+chatroom-backend/target/
+
+# =========================
+# Java
+# =========================
+*.class
+
+# =========================
+# IDE
+# =========================
+.idea/
+.vscode/
+*.iml
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
