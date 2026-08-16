@@ -524,44 +524,6 @@ These dependencies work together to provide the user interface and real-time com
 
 ---
 
-# 🧪 Testing the Application
-
-To test the real-time functionality:
-
-### Step 1
-
-Open the application in one browser window.
-
-### Step 2
-
-Enter a username and join the chat.
-
-### Step 3
-
-Open another browser window or an incognito window.
-
-### Step 4
-
-Join using a different username.
-
-### Step 5
-
-Send a message from the first user.
-
-### Step 6
-
-Verify that the message appears instantly for the second user.
-
-### Step 7
-
-Test private messaging between the users.
-
-### Step 8
-
-Logout from one user and verify that the user's presence is updated for the other user.
-
----
-
 # 🛡️ Key Concepts Demonstrated
 
 This project demonstrates practical implementation of:
@@ -583,35 +545,6 @@ This project demonstrates practical implementation of:
 * Maven
 * npm
 * Vite
-
----
-
-# 🎯 Learning Outcomes
-
-Through this project, the following concepts were practically implemented:
-
-### Frontend Development
-
-* Building reusable React components
-* Managing frontend state
-* Handling user interactions
-* Connecting React with a backend server
-* Implementing real-time updates
-
-### Backend Development
-
-* Creating a Spring Boot application
-* Configuring WebSocket communication
-* Handling STOMP messages
-* Managing connected users
-* Implementing message routing
-
-### Full-Stack Integration
-
-* Connecting React with Spring Boot
-* Establishing WebSocket connections
-* Sending and receiving real-time messages
-* Managing communication between multiple clients
 
 ---
 
@@ -697,82 +630,6 @@ npm run lint
 This helps identify potential JavaScript and React code-quality issues.
 
 ---
-
-# 🤝 Contributing
-
-Contributions are welcome!
-
-If you would like to contribute:
-
-### 1. Fork the repository
-
-```bash
-git fork
-```
-
-### 2. Clone your fork
-
-```bash
-git clone https://github.com/IshitaGujarathi/Real-Time-ChatApplication.git
-```
-
-### 3. Create a new branch
-
-```bash
-git checkout -b feature/your-feature
-```
-
-### 4. Make your changes
-
-Implement your feature or fix.
-
-### 5. Commit your changes
-
-```bash
-git add .
-git commit -m "Add new feature"
-```
-
-### 6. Push your branch
-
-```bash
-git push origin feature/your-feature
-```
-
-### 7. Open a Pull Request
-
-Submit your Pull Request with a clear description of the changes.
-
----
-
-# 🐛 Bug Reports & Feature Requests
-
-If you discover a bug or have an idea for improving the application, feel free to open an issue in the repository.
-
-When reporting a bug, include:
-
-* Description of the problem
-* Steps to reproduce it
-* Expected behavior
-* Actual behavior
-* Screenshots if applicable
-* Browser/OS information
-
----
-
-# 📄 License
-
-This project is open-source and available under the **MIT License**.
-
-You are free to:
-
-* Use the project
-* Modify the project
-* Distribute the project
-* Use it for learning and development
-
----
-
 # 👩‍💻 Author
 
 ## Ishita Gujarathi
@@ -783,14 +640,6 @@ Computer Engineering Student | Java Full Stack Developer | Software Development 
 
 * GitHub: [IshitaGujarathi](https://github.com/IshitaGujarathi)
 * LinkedIn: [Ishita Gujarathi](https://www.linkedin.com/)
-
----
-
-# ⭐ Support
-
-If you found this project useful or interesting, consider giving the repository a ⭐ on GitHub.
-
-Your support is greatly appreciated!
 
 ---
 
