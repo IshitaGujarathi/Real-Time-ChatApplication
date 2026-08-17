@@ -14,13 +14,8 @@ export const ChatPage2 = () => {
 
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
-
   const [publicChats, setPublicChats] = useState([]);
-
-  const [privateChats, setPrivateChats] = useState(
-    new Map()
-  );
-
+  const [privateChats, setPrivateChats] = useState(new Map());
   const [tab, setTab] = useState("CHATROOM");
 
   // Media
@@ -33,15 +28,11 @@ export const ChatPage2 = () => {
   // =====================================================
 
   useEffect(() => {
-    const storedUsername =
-      localStorage.getItem("chat-username");
+    const storedUsername = localStorage.getItem("chat-username");
 
     console.log("👤 Username:", storedUsername);
 
-    if (
-      !storedUsername ||
-      storedUsername.trim() === ""
-    ) {
+    if (!storedUsername || storedUsername.trim() === "") {
       history.push("/login");
       return;
     }
@@ -58,13 +49,23 @@ export const ChatPage2 = () => {
 
     console.log("🔌 Connecting WebSocket...");
 
+    // Backend URL comes from .env / Vercel environment variable
+    const backendUrl = import.meta.env.VITE_API_URL;
+
+    if (!backendUrl) {
+      console.error(
+        "❌ VITE_API_URL is not configured."
+      );
+      return;
+    }
+
     const socket = new SockJS(
-  "https://real-time-chatapplication-1.onrender.com/ws"
-);
+      `${backendUrl}/ws`
+    );
 
     stompClient = Stomp.over(socket);
 
-    // Remove STOMP debug messages
+    // Disable STOMP debug logs
     stompClient.debug = null;
 
     stompClient.connect(
@@ -73,69 +74,62 @@ export const ChatPage2 = () => {
         console.log("✅ WebSocket Connected");
 
         // =================================================
-        // PUBLIC CHAT SUBSCRIPTION
+        // PUBLIC CHAT
         // =================================================
 
         stompClient.subscribe(
           "/chatroom/public",
           (payload) => {
             try {
-              const received =
-                JSON.parse(payload.body);
+              const received = JSON.parse(payload.body);
 
               console.log(
                 "🔥 RECEIVED PUBLIC MESSAGE:",
                 received
               );
 
-              // -------------------------------
+              // ===============================
               // JOIN
-              // -------------------------------
+              // ===============================
 
-              if (
-                received.status === "JOIN"
-              ) {
+              if (received.status === "JOIN") {
                 console.log(
                   "👤 USER JOINED:",
                   received.senderName
                 );
 
-                // Don't display JOIN as chat message
+                // Do not show JOIN as a chat message.
+                // User becomes available for private chat.
                 if (
-                  received.senderName !==
-                  username
+                  received.senderName &&
+                  received.senderName !== username
                 ) {
-                  setPrivateChats(
-                    (oldChats) => {
-                      const newChats =
-                        new Map(oldChats);
+                  setPrivateChats((oldChats) => {
+                    const newChats = new Map(oldChats);
 
-                      if (
-                        !newChats.has(
-                          received.senderName
-                        )
-                      ) {
-                        newChats.set(
-                          received.senderName,
-                          []
-                        );
-                      }
-
-                      return newChats;
+                    if (
+                      !newChats.has(
+                        received.senderName
+                      )
+                    ) {
+                      newChats.set(
+                        received.senderName,
+                        []
+                      );
                     }
-                  );
+
+                    return newChats;
+                  });
                 }
 
                 return;
               }
 
-              // -------------------------------
+              // ===============================
               // LEAVE
-              // -------------------------------
+              // ===============================
 
-              if (
-                received.status === "LEAVE"
-              ) {
+              if (received.status === "LEAVE") {
                 console.log(
                   "👋 USER LEFT:",
                   received.senderName
@@ -144,24 +138,20 @@ export const ChatPage2 = () => {
                 return;
               }
 
-              // -------------------------------
+              // ===============================
               // PUBLIC MESSAGE
-              // -------------------------------
+              // ===============================
 
-              if (
-                received.status === "MESSAGE"
-              ) {
+              if (received.status === "MESSAGE") {
                 console.log(
                   "💬 PUBLIC MESSAGE:",
                   received
                 );
 
-                setPublicChats(
-                  (oldChats) => [
-                    ...oldChats,
-                    received,
-                  ]
-                );
+                setPublicChats((oldChats) => [
+                  ...oldChats,
+                  received,
+                ]);
               }
             } catch (error) {
               console.error(
@@ -177,42 +167,38 @@ export const ChatPage2 = () => {
         );
 
         // =================================================
-        // PRIVATE CHAT SUBSCRIPTION
+        // PRIVATE CHAT
         // =================================================
 
         stompClient.subscribe(
           `/user/${username}/private`,
           (payload) => {
             try {
-              const received =
-                JSON.parse(payload.body);
+              const received = JSON.parse(payload.body);
 
               console.log(
                 "🔒 RECEIVED PRIVATE MESSAGE:",
                 received
               );
 
-              setPrivateChats(
-                (oldChats) => {
-                  const newChats =
-                    new Map(oldChats);
+              setPrivateChats((oldChats) => {
+                const newChats = new Map(oldChats);
 
-                  const oldMessages =
-                    newChats.get(
-                      received.senderName
-                    ) || [];
+                const oldMessages =
+                  newChats.get(
+                    received.senderName
+                  ) || [];
 
-                  newChats.set(
-                    received.senderName,
-                    [
-                      ...oldMessages,
-                      received,
-                    ]
-                  );
+                newChats.set(
+                  received.senderName,
+                  [
+                    ...oldMessages,
+                    received,
+                  ]
+                );
 
-                  return newChats;
-                }
-              );
+                return newChats;
+              });
             } catch (error) {
               console.error(
                 "❌ Error reading private message:",
@@ -227,7 +213,7 @@ export const ChatPage2 = () => {
         );
 
         // =================================================
-        // SEND JOIN MESSAGE
+        // JOIN MESSAGE
         // =================================================
 
         const joinMessage = {
@@ -298,7 +284,6 @@ export const ChatPage2 = () => {
 
     console.log("📁 Selected file:", file);
 
-    // Only allow image/video
     if (
       !file.type.startsWith("image/") &&
       !file.type.startsWith("video/")
@@ -311,8 +296,7 @@ export const ChatPage2 = () => {
       return;
     }
 
-    // File size limit
-    // Base64 is large, so keep files below 5 MB
+    // 5 MB limit
     if (file.size > 5 * 1024 * 1024) {
       alert(
         "Please select a file smaller than 5 MB."
@@ -370,10 +354,7 @@ export const ChatPage2 = () => {
   // =====================================================
 
   const sendMessage = () => {
-    if (
-      !message.trim() &&
-      !media
-    ) {
+    if (!message.trim() && !media) {
       return;
     }
 
@@ -413,7 +394,6 @@ export const ChatPage2 = () => {
     );
 
     setMessage("");
-
     clearMedia();
   };
 
@@ -422,10 +402,7 @@ export const ChatPage2 = () => {
   // =====================================================
 
   const sendPrivateMessage = () => {
-    if (
-      !message.trim() &&
-      !media
-    ) {
+    if (!message.trim() && !media) {
       return;
     }
 
@@ -463,30 +440,20 @@ export const ChatPage2 = () => {
       chatMessage
     );
 
-    // =================================================
-    // SHOW MY PRIVATE MESSAGE IMMEDIATELY
-    // =================================================
+    // Show sender message immediately
+    setPrivateChats((oldChats) => {
+      const newChats = new Map(oldChats);
 
-    setPrivateChats(
-      (oldChats) => {
-        const newChats =
-          new Map(oldChats);
+      const oldMessages =
+        newChats.get(tab) || [];
 
-        const oldMessages =
-          newChats.get(tab) || [];
+      newChats.set(tab, [
+        ...oldMessages,
+        chatMessage,
+      ]);
 
-        newChats.set(tab, [
-          ...oldMessages,
-          chatMessage,
-        ]);
-
-        return newChats;
-      }
-    );
-
-    // =================================================
-    // SEND TO BACKEND
-    // =================================================
+      return newChats;
+    });
 
     stompClient.send(
       "/app/private-message",
@@ -495,7 +462,6 @@ export const ChatPage2 = () => {
     );
 
     setMessage("");
-
     clearMedia();
   };
 
@@ -558,17 +524,11 @@ export const ChatPage2 = () => {
   // =====================================================
 
   const renderMedia = (chat) => {
-    if (
-      !chat ||
-      !chat.media
-    ) {
+    if (!chat || !chat.media) {
       return null;
     }
 
-    // =================================================
     // IMAGE
-    // =================================================
-
     if (
       chat.mediaType === "image" ||
       chat.media.startsWith("data:image/")
@@ -590,10 +550,7 @@ export const ChatPage2 = () => {
       );
     }
 
-    // =================================================
     // VIDEO
-    // =================================================
-
     if (
       chat.mediaType === "video" ||
       chat.media.startsWith("data:video/")
@@ -618,10 +575,7 @@ export const ChatPage2 = () => {
               )
                 ? chat.media
                     .split(";")[0]
-                    .replace(
-                      "data:",
-                      ""
-                    )
+                    .replace("data:", "")
                 : "video/mp4"
             }
           />
@@ -640,9 +594,7 @@ export const ChatPage2 = () => {
   // =====================================================
 
   const renderPublicChats = () => {
-    if (
-      publicChats.length === 0
-    ) {
+    if (publicChats.length === 0) {
       return (
         <div
           style={{
@@ -683,8 +635,7 @@ export const ChatPage2 = () => {
     return publicChats.map(
       (chat, index) => {
         const isMine =
-          chat.senderName ===
-          username;
+          chat.senderName === username;
 
         return (
           <div
@@ -732,8 +683,7 @@ export const ChatPage2 = () => {
                 <div
                   style={{
                     fontSize: "15px",
-                    wordBreak:
-                      "break-word",
+                    wordBreak: "break-word",
                   }}
                 >
                   {chat.message}
@@ -788,8 +738,7 @@ export const ChatPage2 = () => {
     return chats.map(
       (chat, index) => {
         const isMine =
-          chat.senderName ===
-          username;
+          chat.senderName === username;
 
         return (
           <div
@@ -839,8 +788,7 @@ export const ChatPage2 = () => {
                 <div
                   style={{
                     fontSize: "15px",
-                    wordBreak:
-                      "break-word",
+                    wordBreak: "break-word",
                   }}
                 >
                   {chat.message}
@@ -869,16 +817,11 @@ export const ChatPage2 = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        fontFamily:
-          "Arial, sans-serif",
+        fontFamily: "Arial, sans-serif",
         padding: "20px",
         boxSizing: "border-box",
       }}
     >
-      {/* =================================================
-          MAIN CHAT CONTAINER
-      ================================================= */}
-
       <div
         style={{
           width: "100%",
@@ -892,25 +835,20 @@ export const ChatPage2 = () => {
             "0 20px 50px rgba(0,0,0,0.25)",
         }}
       >
-        {/* =================================================
-            LEFT SIDEBAR
-        ================================================= */}
+        {/* SIDEBAR */}
 
         <div
           style={{
             width: "240px",
             background:
               "linear-gradient(180deg, #f8f9ff, #eef0ff)",
-            borderRight:
-              "1px solid #ddd",
+            borderRight: "1px solid #ddd",
             padding: "20px",
             display: "flex",
             flexDirection: "column",
             boxSizing: "border-box",
           }}
         >
-          {/* APP TITLE */}
-
           <div
             style={{
               marginBottom: "25px",
@@ -936,8 +874,6 @@ export const ChatPage2 = () => {
               Real-time messaging
             </div>
           </div>
-
-          {/* USER */}
 
           <div
             style={{
@@ -1068,9 +1004,7 @@ export const ChatPage2 = () => {
           </button>
         </div>
 
-        {/* =================================================
-            CHAT AREA
-        ================================================= */}
+        {/* CHAT AREA */}
 
         <div
           style={{
@@ -1114,9 +1048,7 @@ export const ChatPage2 = () => {
             </div>
           </div>
 
-          {/* =================================================
-              MESSAGE AREA
-          ================================================= */}
+          {/* MESSAGES */}
 
           <div
             style={{
@@ -1131,22 +1063,16 @@ export const ChatPage2 = () => {
               : renderPrivateChats()}
           </div>
 
-          {/* =================================================
-              SELECTED MEDIA PREVIEW
-          ================================================= */}
+          {/* MEDIA PREVIEW */}
 
           {media && (
             <div
               style={{
-                padding:
-                  "10px 15px",
-                background:
-                  "#f0f0f0",
-                borderTop:
-                  "1px solid #ddd",
+                padding: "10px 15px",
+                background: "#f0f0f0",
+                borderTop: "1px solid #ddd",
                 display: "flex",
-                alignItems:
-                  "center",
+                alignItems: "center",
                 gap: "10px",
               }}
             >
@@ -1160,53 +1086,41 @@ export const ChatPage2 = () => {
                 📎 {fileName}
               </div>
 
-              {mediaType ===
-                "image" && (
+              {mediaType === "image" && (
                 <img
                   src={media}
                   alt="Preview"
                   style={{
                     width: "50px",
                     height: "50px",
-                    objectFit:
-                      "cover",
-                    borderRadius:
-                      "8px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
                   }}
                 />
               )}
 
-              {mediaType ===
-                "video" && (
+              {mediaType === "video" && (
                 <video
                   src={media}
                   style={{
                     width: "70px",
                     height: "50px",
-                    objectFit:
-                      "cover",
-                    borderRadius:
-                      "8px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
                   }}
                 />
               )}
 
               <button
-                onClick={
-                  clearMedia
-                }
+                onClick={clearMedia}
                 style={{
                   border: "none",
-                  background:
-                    "#dc3545",
-                  color:
-                    "#ffffff",
-                  borderRadius:
-                    "50%",
+                  background: "#dc3545",
+                  color: "#ffffff",
+                  borderRadius: "50%",
                   width: "30px",
                   height: "30px",
-                  cursor:
-                    "pointer",
+                  cursor: "pointer",
                 }}
               >
                 ✕
@@ -1214,24 +1128,19 @@ export const ChatPage2 = () => {
             </div>
           )}
 
-          {/* =================================================
-              MESSAGE INPUT
-          ================================================= */}
+          {/* INPUT */}
 
           <div
             style={{
               padding: "15px",
-              borderTop:
-                "1px solid #ddd",
-              background:
-                "#ffffff",
+              borderTop: "1px solid #ddd",
+              background: "#ffffff",
               display: "flex",
               gap: "10px",
-              alignItems:
-                "center",
+              alignItems: "center",
             }}
           >
-            {/* FILE BUTTON */}
+            {/* FILE */}
 
             <label
               htmlFor="file"
@@ -1239,13 +1148,10 @@ export const ChatPage2 = () => {
                 width: "45px",
                 height: "45px",
                 borderRadius: "10px",
-                background:
-                  "#f0f1f5",
+                background: "#f0f1f5",
                 display: "flex",
-                justifyContent:
-                  "center",
-                alignItems:
-                  "center",
+                justifyContent: "center",
+                alignItems: "center",
                 cursor: "pointer",
                 fontSize: "20px",
               }}
@@ -1258,9 +1164,7 @@ export const ChatPage2 = () => {
               id="file"
               type="file"
               accept="image/*,video/*"
-              onChange={
-                handleMediaChange
-              }
+              onChange={handleMediaChange}
               style={{
                 display: "none",
               }}
@@ -1281,22 +1185,16 @@ export const ChatPage2 = () => {
                   e.target.value
                 )
               }
-              onKeyDown={
-                handleKeyDown
-              }
+              onKeyDown={handleKeyDown}
               style={{
                 flex: 1,
                 height: "45px",
-                padding:
-                  "0 15px",
-                border:
-                  "1px solid #ddd",
-                borderRadius:
-                  "10px",
+                padding: "0 15px",
+                border: "1px solid #ddd",
+                borderRadius: "10px",
                 outline: "none",
                 fontSize: "15px",
-                boxSizing:
-                  "border-box",
+                boxSizing: "border-box",
               }}
             />
 
@@ -1304,10 +1202,7 @@ export const ChatPage2 = () => {
 
             <button
               onClick={() => {
-                if (
-                  tab ===
-                  "CHATROOM"
-                ) {
+                if (tab === "CHATROOM") {
                   sendMessage();
                 } else {
                   sendPrivateMessage();
@@ -1315,21 +1210,15 @@ export const ChatPage2 = () => {
               }}
               style={{
                 height: "45px",
-                padding:
-                  "0 22px",
+                padding: "0 22px",
                 border: "none",
-                borderRadius:
-                  "10px",
+                borderRadius: "10px",
                 background:
                   "linear-gradient(135deg, #667eea, #764ba2)",
-                color:
-                  "#ffffff",
-                cursor:
-                  "pointer",
-                fontWeight:
-                  "bold",
-                fontSize:
-                  "15px",
+                color: "#ffffff",
+                cursor: "pointer",
+                fontWeight: "bold",
+                fontSize: "15px",
               }}
             >
               Send
